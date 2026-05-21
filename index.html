@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>Checklist</title>
+
+  <!-- Optional elegant Arabic fonts (not a framework) -->
+  https://fonts.googleapis.com
+  https://fonts.gstatic.com
+  <!-- Cairo + Amiri + Noto Kufi Arabic -->
+  https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Subtle animated background layer -->
+  <div class="bg" aria-hidden="true"></div>
+  <div class="particles" aria-hidden="true"></div>
+
+  <!-- Loading overlay (nice premium feel) -->
+  <div id="loader" class="loader" aria-hidden="true">
+    <div class="loader__card">
+      <div class="loader__ring"></div>
+      <div class="loader__text">
+        <div class="loader__title">Checklist</div>
+        <div class="loader__sub">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIXED STICKY HEADER -->
+  <header class="topbar" role="banner">
+    <div class="topbar__inner">
+      <!-- Branding (always visible) -->
+      <div class="brand" dir="ltr" aria-label="Checklist Branding">
+        <span class="brand__icon" aria-hidden="true">✦</span>
+        <span class="brand__title">Checklist</span>
+      </div>
+
+      <!-- Global progress summary -->
+      <div class="global">
+        <div class="global__row">
+          <div class="global__title">التقدم العام</div>
+          <div class="global__total" id="totalLecturesText">Total Lectures : 35</div>
+        </div>
+
+        <div class="global__stats">
+          <div class="stat">
+            <div class="stat__label">Completed</div>
+            <div class="stat__value" id="globalCompletedText">0 / 35</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Remaining</div>
+            <div class="stat__value" id="globalRemainingText">35</div>
+          </div>
+          <div class="stat stat--accent">
+            <div class="stat__label">Progress</div>
+            <div class="stat__value" id="globalPercentText">0%</div>
+          </div>
+        </div>
+
+        <div class="bar bar--global" aria-label="Global Progress Bar">
+          <div class="bar__track">
+            <div class="bar__fill" id="globalBar"></div>
+            <div class="bar__glow" id="globalGlow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="app" id="app" role="main">
+    <!-- HOME -->
+    <section id="home" class="view view--active" aria-label="Home">
+      <div class="container">
+        <div class="hero">
+          <h1 class="hero__title arabic-heading">متابعة محاضرات الطب</h1>
+          <p class="hero__subtitle">اختر القسم — تابِع التقدم — واحفظ إنجازك تلقائياً.</p>
+        </div>
+
+        <div class="categoryGrid" role="navigation" aria-label="Categories">
+          <button class="categoryCard" data-nav="ortho" type="button" aria-label="Open Orthopedics">
+            <div class="categoryCard__glow" aria-hidden="true"></div>
+            <div class="categoryCard__content">
+              <div class="categoryCard__icon" aria-hidden="true">💀</div>
+              <div class="categoryCard__text">
+                <div class="categoryCard__title arabic-heading">اورثو</div>
+                <div class="categoryCard__meta">Orthopedics • 20 Lectures</div>
+              </div>
+            </div>
+          </button>
+
+          <button class="categoryCard" data-nav="neuro" type="button" aria-label="Open Neurology">
+            <div class="categoryCard__glow" aria-hidden="true"></div>
+            <div class="categoryCard__content">
+              <div class="categoryCard__icon" aria-hidden="true">🧠</div>
+              <div class="categoryCard__text">
+                <div class="categoryCard__title arabic-heading">نيورو</div>
+                <div class="categoryCard__meta">Neurology • 15 Lectures</div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="tipCard glass">
+          <div class="tipCard__title">ميزة مهمة ✅</div>
+          <div class="tipCard__text">
+            كل تقدمك محفوظ تلقائياً باستخدام <span class="pill">Local Storage</span> — حتى لو سكّرت المتصفح أو حدّثت الصفحة.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORTHO VIEW -->
+    <section id="ortho" class="view" aria-label="Orthopedics">
+      <div class="container">
+        <div class="sectionTop">
+          <button class="backBtn" data-back type="button" aria-label="Back to Home">
+            <span aria-hidden="true">←</span>
+            <span>رجوع</span>
+          </button>
+
+          <div class="sectionHead glass">
+            <div class="sectionHead__row">
+              <div>
+                <h2 class="sectionHead__title">Orthopedics Progress</h2>
+                <div class="sectionHead__sub" id="orthoCountText">0 / 20 completed</div>
+              </div>
+              <div class="sectionHead__badge" id="orthoPercentText">0%</div>
+            </div>
+
+            <div class="bar" aria-label="Orthopedics Progress Bar">
+              <div class="bar__track">
+                <div class="bar__fill" id="orthoBar"></div>
+                <div class="bar__glow" id="orthoGlow"></div>
+              </div>
+            </div>
+
+            <div class="sectionComplete" id="orthoComplete" hidden>
+              <span class="sectionComplete__icon">✅</span>
+              <span class="sectionComplete__text">Orthopedics Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Responsive layout: LEFT = 2, RIGHT = 4 -->
+        <div class="twoColLayout">
+          <div class="col col--left" aria-label="Left Lecturers">
+            <div class="lecturerCard glass" data-lecturer="waled">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">د. وليد حداد</div>
+                <div class="lecturerCard__tag">Ortho • Lecturer</div>
+              </div>
+              <ul class="lectureList" id="ortho-waled"></ul>
+            </div>
+
+            <div class="lecturerCard glass" data-lecturer="osama">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">د. أسامة الدهامشة</div>
+                <div class="lecturerCard__tag">Ortho • Lecturer</div>
+              </div>
+              <ul class="lectureList" id="ortho-osama"></ul>
+            </div>
+          </div>
+
+          <div class="col col--right" aria-label="Right Lecturers">
+            <div class="lecturerCard glass" data-lecturer="jamal">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">د. جمال العمري</div>
+                <div class="lecturerCard__tag">Ortho • Lecturer</div>
+              </div>
+              <ul class="lectureList" id="ortho-jamal"></ul>
+            </div>
+
+            <div class="lecturerCard glass" data-lecturer="samir">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">د. سمير السقا</div>
+                <div class="lecturerCard__tag">Ortho • Lecturer</div>
+              </div>
+              <ul class="lectureList" id="ortho-samir"></ul>
+            </div>
+
+            <div class="lecturerCard glass" data-lecturer="ananzeh">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">د. محمد عنانزة</div>
+                <div class="lecturerCard__tag">Ortho • Lecturer</div>
+              </div>
+              <ul class="lectureList" id="ortho-ananzeh"></ul>
+            </div>
+
+            <div class="lecturerCard glass" data-lecturer="khreisat">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">د. محمد الخريسات</div>
+                <div class="lecturerCard__tag">Ortho • Lecturer</div>
+              </div>
+              <ul class="lectureList" id="ortho-khreisat"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEURO VIEW -->
+    <section id="neuro" class="view" aria-label="Neurology">
+      <div class="container">
+        <div class="sectionTop">
+          <button class="backBtn" data-back type="button" aria-label="Back to Home">
+            <span aria-hidden="true">←</span>
+            <span>رجوع</span>
+          </button>
+
+          <div class="sectionHead glass">
+            <div class="sectionHead__row">
+              <div>
+                <h2 class="sectionHead__title">Neurology Progress</h2>
+                <div class="sectionHead__sub" id="neuroCountText">0 / 15 completed</div>
+              </div>
+              <div class="sectionHead__badge sectionHead__badge--cyan" id="neuroPercentText">0%</div>
+            </div>
+
+            <div class="bar bar--cyan" aria-label="Neurology Progress Bar">
+              <div class="bar__track">
+                <div class="bar__fill" id="neuroBar"></div>
+                <div class="bar__glow" id="neuroGlow"></div>
+              </div>
+            </div>
+
+            <div class="sectionComplete sectionComplete--cyan" id="neuroComplete" hidden>
+              <span class="sectionComplete__icon">✅</span>
+              <span class="sectionComplete__text">Neurology Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Neuro layout: RIGHT = Neuromedicine, LEFT = Neurosurgery -->
+        <div class="twoColLayout twoColLayout--neuro">
+          <div class="col col--right" aria-label="Neuromedicine">
+            <div class="lecturerCard glass lecturerCard--cyan">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name" dir="ltr">💉🧠 Neuromedicine</div>
+                <div class="lecturerCard__tag">Neuro • Track</div>
+              </div>
+              <ul class="lectureList" id="neuro-medicine"></ul>
+            </div>
+          </div>
+
+          <div class="col col--left" aria-label="Neurosurgery">
+            <div class="lecturerCard glass lecturerCard--cyan">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name" dir="ltr">🪚🧠 Neurosurgery (Online lectures)</div>
+                <div class="lecturerCard__tag">Neuro • Track</div>
+              </div>
+              <ul class="lectureList" id="neuro-surgery"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Small toast for completion / messages -->
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
