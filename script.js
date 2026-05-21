@@ -1,10 +1,10 @@
 /* =========================================================
    Checklist - Vanilla JS
    - Renders lecture lists
-   - Handles navigation (Home / Ortho / Neuro)
+   - Navigation (Home / Ortho / Neuro)
    - Saves progress to localStorage
-   - Updates global + section progress bars and counters
-   - Elegant feedback (toast + optional sound)
+   - Updates global + section progress
+   - Responsive-safe header height (keeps global box stable)
    ========================================================= */
 
 (() => {
@@ -23,7 +23,6 @@
         {
           key: "waled",
           mountId: "ortho-waled",
-          lecturer: "د. وليد حداد",
           lectures: [
             { n: 1, title: "Principles of fractures" },
             { n: 2, title: "Peripheral nerve injuries" },
@@ -33,7 +32,6 @@
         {
           key: "osama",
           mountId: "ortho-osama",
-          lecturer: "د. أسامة الدهامشة",
           lectures: [
             { n: 4, title: "Overview of Spine Anatomy" },
             { n: 5, title: "Scoliosis & kyphosis" },
@@ -48,15 +46,11 @@
         {
           key: "jamal",
           mountId: "ortho-jamal",
-          lecturer: "د. جمال العمري",
-          lectures: [
-            { n: 12, title: "Upper limb" }
-          ]
+          lectures: [{ n: 12, title: "Upper limb" }]
         },
         {
           key: "samir",
           mountId: "ortho-samir",
-          lecturer: "د. سمير السقا",
           lectures: [
             { n: 13, title: "Musculoskeletal infections" },
             { n: 14, title: "Arthritis in hip & knee" }
@@ -65,7 +59,6 @@
         {
           key: "ananzeh",
           mountId: "ortho-ananzeh",
-          lecturer: "د. محمد عنانزة",
           lectures: [
             { n: 15, title: "Pediatric foot" },
             { n: 16, title: "SCFE" },
@@ -77,10 +70,7 @@
         {
           key: "khreisat",
           mountId: "ortho-khreisat",
-          lecturer: "د. محمد الخريسات",
-          lectures: [
-            { n: 20, title: "Lower limb" }
-          ]
+          lectures: [{ n: 20, title: "Lower limb" }]
         }
       ]
     },
@@ -91,7 +81,6 @@
         {
           key: "medicine",
           mountId: "neuro-medicine",
-          title: "💉🧠 Neuromedicine",
           lectures: [
             { n: 1, title: "Medical neurology" },
             { n: 2, title: "CVA" },
@@ -107,7 +96,6 @@
         {
           key: "surgery",
           mountId: "neuro-surgery",
-          title: "🪚🧠 Neurosurgery (Online lectures)",
           lectures: [
             { n: 10, title: "Back pain" },
             { n: 11, title: "CNS tumors" },
@@ -127,14 +115,6 @@
      Local Storage
   ---------------------------- */
   const STORAGE_KEY = "checklist-progress-v1";
-
-  /** progressState shape:
-   *  {
-   *    "ortho-1": true,
-   *    "neuro-10": false,
-   *    ...
-   *  }
-   */
   let progressState = loadState();
 
   function loadState() {
@@ -157,6 +137,7 @@
   ---------------------------- */
   const loader = document.getElementById("loader");
   const toast = document.getElementById("toast");
+  const topbar = document.getElementById("topbar");
 
   // Views
   const views = {
@@ -187,6 +168,16 @@
   const neuroComplete = document.getElementById("neuroComplete");
 
   /* ---------------------------
+     Keep header size stable (phone/tablet orientation)
+     Updates CSS var: --topbar-h
+  ---------------------------- */
+  function syncHeaderHeight() {
+    if (!topbar) return;
+    const h = Math.ceil(topbar.getBoundingClientRect().height);
+    document.documentElement.style.setProperty("--topbar-h", `${h}px`);
+  }
+
+  /* ---------------------------
      Render lecture lists
   ---------------------------- */
   function renderAll() {
@@ -210,7 +201,6 @@
       });
     });
 
-    // After render, apply existing state to UI
     applyStateToUI();
     updateAllProgress();
   }
@@ -239,17 +229,12 @@
     t.className = "lectureTitle";
     t.textContent = `${number}. ${title}`;
 
-    const meta = document.createElement("div");
-    meta.className = "lectureMeta";
-    meta.textContent = section === "ortho" ? "Orthopedics" : "Neurology";
-
+    // (Removed) meta line under lecture (Orthopedics/Neurology)
     text.appendChild(t);
-    text.appendChild(meta);
 
     li.appendChild(ck);
     li.appendChild(text);
 
-    // Set completed class initially
     if (input.checked) li.classList.add("completed");
 
     return li;
@@ -273,22 +258,17 @@
     progressState[id] = checked;
     saveState();
 
-    // Visual class update (no reordering => item stays in place)
     li.classList.toggle("completed", checked);
 
-    // Elegant feedback
     if (checked) {
-      playTick(); // optional sound
+      playTick();
       glowPulse(section);
       showToast(`✅ تم إنجاز المحاضرة ${id.split("-")[1]}`);
     } else {
       showToast(`↩️ تم إلغاء تحديد المحاضرة ${id.split("-")[1]}`);
     }
 
-    // Update progress everywhere
     updateAllProgress();
-
-    // If section complete, celebrate
     checkSectionCompletion(section);
   }
 
@@ -296,7 +276,6 @@
      Progress calculations
   ---------------------------- */
   function countCompleted(prefix) {
-    // prefix "ortho-" or "neuro-"
     let c = 0;
     for (const k in progressState) {
       if (k.startsWith(prefix) && progressState[k]) c++;
@@ -305,16 +284,12 @@
   }
 
   function getGlobalCompleted() {
-    // Only count ids that actually exist (safe)
     const valid = new Set();
-
     DATA.ortho.groups.forEach(g => g.lectures.forEach(l => valid.add(`ortho-${l.n}`)));
     DATA.neuro.groups.forEach(g => g.lectures.forEach(l => valid.add(`neuro-${l.n}`)));
 
     let c = 0;
-    for (const id of valid) {
-      if (progressState[id]) c++;
-    }
+    for (const id of valid) if (progressState[id]) c++;
     return c;
   }
 
@@ -327,7 +302,6 @@
     globalCompletedText.textContent = `${globalDone} / ${TOTAL_LECTURES}`;
     globalRemainingText.textContent = `${globalRemain}`;
     globalPercentText.textContent = `${globalPct}%`;
-
     setBar(globalBar, globalGlow, globalPct);
 
     // Ortho
@@ -347,12 +321,14 @@
     // Completion banners
     orthoComplete.hidden = !(orthoDone === DATA.ortho.total);
     neuroComplete.hidden = !(neuroDone === DATA.neuro.total);
+
+    // Keep header height synced if lines wrap on smaller screens
+    syncHeaderHeight();
   }
 
   function setBar(fillEl, glowEl, pct) {
     const clamped = Math.max(0, Math.min(100, pct));
     fillEl.style.width = `${clamped}%`;
-    // Show glow more when progress increases
     glowEl.style.opacity = clamped > 0 ? "1" : "0";
   }
 
@@ -375,7 +351,6 @@
     }
   }
 
-  // Small, elegant confetti (DOM-based, short-lived)
   function microConfetti() {
     const count = 18;
     for (let i = 0; i < count; i++) {
@@ -411,7 +386,7 @@
   }
 
   /* ---------------------------
-     Toast message
+     Toast
   ---------------------------- */
   let toastTimer = null;
 
@@ -419,8 +394,7 @@
     toast.textContent = message;
     toast.hidden = false;
     toast.classList.remove("toast--show");
-    // force reflow to restart animation
-    void toast.offsetWidth;
+    void toast.offsetWidth; // restart animation
     toast.classList.add("toast--show");
 
     clearTimeout(toastTimer);
@@ -430,27 +404,20 @@
   }
 
   /* ---------------------------
-     Navigation (home / ortho / neuro)
+     Navigation
   ---------------------------- */
   function showView(name) {
     Object.keys(views).forEach(v => {
       views[v].classList.toggle("view--active", v === name);
     });
-
-    // scroll top nicely, but keep header visible
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function initNav() {
-    // Category cards
     document.querySelectorAll("[data-nav]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const target = btn.dataset.nav;
-        showView(target);
-      });
+      btn.addEventListener("click", () => showView(btn.dataset.nav));
     });
 
-    // Back buttons
     document.querySelectorAll("[data-back]").forEach(btn => {
       btn.addEventListener("click", () => showView("home"));
     });
@@ -458,16 +425,14 @@
 
   /* ---------------------------
      Optional sound (Web Audio)
-     No external files needed.
   ---------------------------- */
   let audioCtx = null;
 
   function playTick() {
     try {
-      // Create on first interaction (browser policy friendly)
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
       const t = audioCtx.currentTime;
+
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
 
@@ -485,39 +450,37 @@
       osc.start(t);
       osc.stop(t + 0.11);
     } catch {
-      // If audio fails, silently ignore (optional feature)
+      // ignore
     }
   }
 
-  /* Glow pulse on progress bars */
   function glowPulse(section) {
     const el = section === "ortho" ? orthoGlow : section === "neuro" ? neuroGlow : globalGlow;
     if (!el) return;
-    el.animate(
-      [{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }],
-      { duration: 520, easing: "ease-in-out" }
-    );
+    el.animate([{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }], {
+      duration: 520,
+      easing: "ease-in-out"
+    });
   }
 
   /* ---------------------------
-     Init + Loader
+     Init
   ---------------------------- */
   function init() {
-    // Render everything
     renderAll();
     initNav();
 
-    // Nice loading experience
-    setTimeout(() => {
-      loader.setAttribute("aria-hidden", "true");
-    }, 450);
+    // Sync header height now + on resize/orientation changes
+    syncHeaderHeight();
+    window.addEventListener("resize", syncHeaderHeight);
 
-    // First check: show completion banners if already done
+    // Nice loader
+    setTimeout(() => loader.setAttribute("aria-hidden", "true"), 450);
+
+    // If already completed
     checkSectionCompletion("ortho");
     checkSectionCompletion("neuro");
   }
 
-  // Start
   document.addEventListener("DOMContentLoaded", init);
-
 })();
