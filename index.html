@@ -6,11 +6,15 @@
   <meta name="theme-color" content="#0b0f14" />
   <title>Checklist</title>
 
-  <!-- Optional elegant Arabic fonts (not a framework) -->
+  <!-- Elegant Arabic fonts (optional) -->
   https://fonts.googleapis.com
   https://fonts.gstatic.com
-  <!-- Cairo + Amiri + Noto Kufi Arabic -->
   https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap
+
+  <!-- GoatCounter (PRIVATE analytics - not visible to users)
+       1) Create site on GoatCounter, you will get: https://YOURCODE.goatcounter.com
+       2) Replace YOURCODE below -->
+  //gc.zgo.at/count.js</script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -20,7 +24,7 @@
   <div class="bg" aria-hidden="true"></div>
   <div class="particles" aria-hidden="true"></div>
 
-  <!-- Loading overlay (nice premium feel) -->
+  <!-- Loading overlay -->
   <div id="loader" class="loader" aria-hidden="true">
     <div class="loader__card">
       <div class="loader__ring"></div>
@@ -32,15 +36,15 @@
   </div>
 
   <!-- FIXED STICKY HEADER -->
-  <header class="topbar" role="banner">
+  <header class="topbar" role="banner" id="topbar">
     <div class="topbar__inner">
-      <!-- Branding (always visible) -->
+      <!-- Branding -->
       <div class="brand" dir="ltr" aria-label="Checklist Branding">
         <span class="brand__icon" aria-hidden="true">✦</span>
         <span class="brand__title">Checklist</span>
       </div>
 
-      <!-- Global progress summary -->
+      <!-- Global progress -->
       <div class="global">
         <div class="global__row">
           <div class="global__title">التقدم العام</div>
@@ -106,12 +110,7 @@
           </button>
         </div>
 
-        <div class="tipCard glass">
-          <div class="tipCard__title">ميزة مهمة ✅</div>
-          <div class="tipCard__text">
-            كل تقدمك محفوظ تلقائياً باستخدام <span class="pill">Local Storage</span> — حتى لو سكّرت المتصفح أو حدّثت الصفحة.
-          </div>
-        </div>
+        <!-- (Removed) tip card: "ميزة مهمة كل تقدمك محفوظ ..." -->
       </div>
     </section>
 
@@ -147,13 +146,12 @@
           </div>
         </div>
 
-        <!-- Responsive layout: LEFT = 2, RIGHT = 4 -->
+        <!-- Responsive layout -->
         <div class="twoColLayout">
           <div class="col col--left" aria-label="Left Lecturers">
             <div class="lecturerCard glass" data-lecturer="waled">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. وليد حداد</div>
-                <div class="lecturerCard__tag">Ortho • Lecturer</div>
               </div>
               <ul class="lectureList" id="ortho-waled"></ul>
             </div>
@@ -161,7 +159,6 @@
             <div class="lecturerCard glass" data-lecturer="osama">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. أسامة الدهامشة</div>
-                <div class="lecturerCard__tag">Ortho • Lecturer</div>
               </div>
               <ul class="lectureList" id="ortho-osama"></ul>
             </div>
@@ -171,7 +168,6 @@
             <div class="lecturerCard glass" data-lecturer="jamal">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. جمال العمري</div>
-                <div class="lecturerCard__tag">Ortho • Lecturer</div>
               </div>
               <ul class="lectureList" id="ortho-jamal"></ul>
             </div>
@@ -179,7 +175,6 @@
             <div class="lecturerCard glass" data-lecturer="samir">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. سمير السقا</div>
-                <div class="lecturerCard__tag">Ortho • Lecturer</div>
               </div>
               <ul class="lectureList" id="ortho-samir"></ul>
             </div>
@@ -187,7 +182,6 @@
             <div class="lecturerCard glass" data-lecturer="ananzeh">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. محمد عنانزة</div>
-                <div class="lecturerCard__tag">Ortho • Lecturer</div>
               </div>
               <ul class="lectureList" id="ortho-ananzeh"></ul>
             </div>
@@ -195,7 +189,6 @@
             <div class="lecturerCard glass" data-lecturer="khreisat">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. محمد الخريسات</div>
-                <div class="lecturerCard__tag">Ortho • Lecturer</div>
               </div>
               <ul class="lectureList" id="ortho-khreisat"></ul>
             </div>
@@ -236,13 +229,11 @@
           </div>
         </div>
 
-        <!-- Neuro layout: RIGHT = Neuromedicine, LEFT = Neurosurgery -->
         <div class="twoColLayout twoColLayout--neuro">
           <div class="col col--right" aria-label="Neuromedicine">
             <div class="lecturerCard glass lecturerCard--cyan">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name" dir="ltr">💉🧠 Neuromedicine</div>
-                <div class="lecturerCard__tag">Neuro • Track</div>
               </div>
               <ul class="lectureList" id="neuro-medicine"></ul>
             </div>
@@ -252,7 +243,6 @@
             <div class="lecturerCard glass lecturerCard--cyan">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name" dir="ltr">🪚🧠 Neurosurgery (Online lectures)</div>
-                <div class="lecturerCard__tag">Neuro • Track</div>
               </div>
               <ul class="lectureList" id="neuro-surgery"></ul>
             </div>
@@ -262,7 +252,7 @@
     </section>
   </main>
 
-  <!-- Small toast for completion / messages -->
+  <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
   <script src="script.js"></script>
