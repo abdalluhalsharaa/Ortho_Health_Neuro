@@ -1,120 +1,120 @@
 /* =========================================================
    Checklist - Vanilla JS
-   - Renders lecture lists
-   - Navigation (Home / Ortho / Neuro)
-   - Saves progress to localStorage
-   - Updates global + section progress
-   - Responsive-safe header height (keeps global box stable)
+   - 3 subjects: Ortho (20) + Neuro (15) + Healthcare (14)
+   - Global total = 49
+   - LocalStorage persistence
+   - Reset per subject with elegant confirmation modal
    ========================================================= */
 
 (() => {
   "use strict";
 
   /* ---------------------------
-     Data (exact lecture counts)
-     Total = 35
-     Ortho = 20
-     Neuro = 15
+     Data
   ---------------------------- */
   const DATA = {
     ortho: {
+      nameAr: "اورثو",
       total: 20,
+      prefix: "ortho-",
       groups: [
-        {
-          key: "waled",
-          mountId: "ortho-waled",
-          lectures: [
-            { n: 1, title: "Principles of fractures" },
-            { n: 2, title: "Peripheral nerve injuries" },
-            { n: 3, title: "X-ray (extra lecture)" }
-          ]
-        },
-        {
-          key: "osama",
-          mountId: "ortho-osama",
-          lectures: [
-            { n: 4, title: "Overview of Spine Anatomy" },
-            { n: 5, title: "Scoliosis & kyphosis" },
-            { n: 6, title: "Spondylosis & Spondylolisthesis" },
-            { n: 7, title: "Spina bifida and torticollis" },
-            { n: 8, title: "Spine disorders" },
-            { n: 9, title: "Intervertebral disc prolapse" },
-            { n: 10, title: "Principles in spine fractures" },
-            { n: 11, title: "Bone tumor x ray" }
-          ]
-        },
-        {
-          key: "jamal",
-          mountId: "ortho-jamal",
-          lectures: [{ n: 12, title: "Upper limb" }]
-        },
-        {
-          key: "samir",
-          mountId: "ortho-samir",
-          lectures: [
-            { n: 13, title: "Musculoskeletal infections" },
-            { n: 14, title: "Arthritis in hip & knee" }
-          ]
-        },
-        {
-          key: "ananzeh",
-          mountId: "ortho-ananzeh",
-          lectures: [
-            { n: 15, title: "Pediatric foot" },
-            { n: 16, title: "SCFE" },
-            { n: 17, title: "Legg Calve Perthes disease" },
-            { n: 18, title: "DDH" },
-            { n: 19, title: "Genu varus and valgus" }
-          ]
-        },
-        {
-          key: "khreisat",
-          mountId: "ortho-khreisat",
-          lectures: [{ n: 20, title: "Lower limb" }]
-        }
+        { mountId: "ortho-waled", lectures: [
+          { n: 1, title: "Principles of fractures" },
+          { n: 2, title: "Peripheral nerve injuries" },
+          { n: 3, title: "X-ray (extra lecture)" }
+        ]},
+        { mountId: "ortho-osama", lectures: [
+          { n: 4, title: "Overview of Spine Anatomy" },
+          { n: 5, title: "Scoliosis & kyphosis" },
+          { n: 6, title: "Spondylosis & Spondylolisthesis" },
+          { n: 7, title: "Spina bifida and torticollis" },
+          { n: 8, title: "Spine disorders" },
+          { n: 9, title: "Intervertebral disc prolapse" },
+          { n: 10, title: "Principles in spine fractures" },
+          { n: 11, title: "Bone tumor x ray" }
+        ]},
+        { mountId: "ortho-jamal", lectures: [
+          { n: 12, title: "Upper limb" }
+        ]},
+        { mountId: "ortho-samir", lectures: [
+          { n: 13, title: "Musculoskeletal infections" },
+          { n: 14, title: "Arthritis in hip & knee" }
+        ]},
+        { mountId: "ortho-ananzeh", lectures: [
+          { n: 15, title: "Pediatric foot" },
+          { n: 16, title: "SCFE" },
+          { n: 17, title: "Legg Calve Perthes disease" },
+          { n: 18, title: "DDH" },
+          { n: 19, title: "Genu varus and valgus" }
+        ]},
+        { mountId: "ortho-khreisat", lectures: [
+          { n: 20, title: "Lower limb" }
+        ]}
       ]
     },
 
     neuro: {
+      nameAr: "نيورو",
       total: 15,
+      prefix: "neuro-",
       groups: [
-        {
-          key: "medicine",
-          mountId: "neuro-medicine",
-          lectures: [
-            { n: 1, title: "Medical neurology" },
-            { n: 2, title: "CVA" },
-            { n: 3, title: "Peripheral nervous" },
-            { n: 4, title: "Movement disorders" },
-            { n: 5, title: "Multiple sclerosis" },
-            { n: 6, title: "Dementia" },
-            { n: 7, title: "Epilepsy" },
-            { n: 8, title: "Infective neurological diseases" },
-            { n: 9, title: "Headache" }
-          ]
-        },
-        {
-          key: "surgery",
-          mountId: "neuro-surgery",
-          lectures: [
-            { n: 10, title: "Back pain" },
-            { n: 11, title: "CNS tumors" },
-            { n: 12, title: "Spinal injuries" },
-            { n: 13, title: "Congenital anomalies" },
-            { n: 14, title: "Head injuries" },
-            { n: 15, title: "Introduction to SAH" }
-          ]
-        }
+        { mountId: "neuro-medicine", lectures: [
+          { n: 1, title: "Medical neurology" },
+          { n: 2, title: "CVA" },
+          { n: 3, title: "Peripheral nervous" },
+          { n: 4, title: "Movement disorders" },
+          { n: 5, title: "Multiple sclerosis" },
+          { n: 6, title: "Dementia" },
+          { n: 7, title: "Epilepsy" },
+          { n: 8, title: "Infective neurological diseases" },
+          { n: 9, title: "Headache" }
+        ]},
+        { mountId: "neuro-surgery", lectures: [
+          { n: 10, title: "Back pain" },
+          { n: 11, title: "CNS tumors" },
+          { n: 12, title: "Spinal injuries" },
+          { n: 13, title: "Congenital anomalies" },
+          { n: 14, title: "Head injuries" },
+          { n: 15, title: "Introduction to SAH" }
+        ]}
+      ]
+    },
+
+    health: {
+      nameAr: "الرعاية الصحية",
+      total: 14,
+      prefix: "health-",
+      groups: [
+        // Med 1-6
+        { mountId: "health-med", lectures: [
+          { n: 1, title: "Immunization" },
+          { n: 2, title: "Primary health care" },
+          { n: 3, title: "Smoking Cessation" },
+          { n: 4, title: "The medical interview" },
+          { n: 5, title: "Preventive Medicine" },
+          { n: 6, title: "Obesity" }
+        ]},
+        // Final 7-14
+        { mountId: "health-final", lectures: [
+          { n: 7, title: "Evidence based medicine" },
+          { n: 8, title: "Communication skills" },
+          { n: 9, title: "Dr.Pt relationship" },
+          { n: 10, title: "The Diagnostic process" },
+          { n: 11, title: "Breaking bad news" },
+          { n: 12, title: "Counselling" },
+          { n: 13, title: "Laboratory interpretation" },
+          { n: 14, title: "Difficult patient" }
+        ]}
       ]
     }
   };
 
-  const TOTAL_LECTURES = 35;
+  const TOTAL_LECTURES = DATA.ortho.total + DATA.neuro.total + DATA.health.total; // 49
 
   /* ---------------------------
      Local Storage
   ---------------------------- */
-  const STORAGE_KEY = "checklist-progress-v1";
+  const STORAGE_KEY = "checklist-progress-v2"; // bumped key due to new subject added
   let progressState = loadState();
 
   function loadState() {
@@ -127,7 +127,6 @@
       return {};
     }
   }
-
   function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState));
   }
@@ -139,11 +138,13 @@
   const toast = document.getElementById("toast");
   const topbar = document.getElementById("topbar");
 
-  // Views
+  const totalLecturesText = document.getElementById("totalLecturesText");
+
   const views = {
     home: document.getElementById("home"),
     ortho: document.getElementById("ortho"),
-    neuro: document.getElementById("neuro")
+    neuro: document.getElementById("neuro"),
+    health: document.getElementById("health")
   };
 
   // Global header elements
@@ -153,23 +154,35 @@
   const globalBar = document.getElementById("globalBar");
   const globalGlow = document.getElementById("globalGlow");
 
-  // Ortho section header elements
+  // Ortho section header
   const orthoCountText = document.getElementById("orthoCountText");
   const orthoPercentText = document.getElementById("orthoPercentText");
   const orthoBar = document.getElementById("orthoBar");
   const orthoGlow = document.getElementById("orthoGlow");
   const orthoComplete = document.getElementById("orthoComplete");
 
-  // Neuro section header elements
+  // Neuro section header
   const neuroCountText = document.getElementById("neuroCountText");
   const neuroPercentText = document.getElementById("neuroPercentText");
   const neuroBar = document.getElementById("neuroBar");
   const neuroGlow = document.getElementById("neuroGlow");
   const neuroComplete = document.getElementById("neuroComplete");
 
+  // Health section header
+  const healthCountText = document.getElementById("healthCountText");
+  const healthPercentText = document.getElementById("healthPercentText");
+  const healthBar = document.getElementById("healthBar");
+  const healthGlow = document.getElementById("healthGlow");
+  const healthComplete = document.getElementById("healthComplete");
+
+  // Modal
+  const confirmModal = document.getElementById("confirmModal");
+  const confirmText = document.getElementById("confirmText");
+  const confirmCancel = document.getElementById("confirmCancel");
+  const confirmYes = document.getElementById("confirmYes");
+
   /* ---------------------------
-     Keep header size stable (phone/tablet orientation)
-     Updates CSS var: --topbar-h
+     Header height sync
   ---------------------------- */
   function syncHeaderHeight() {
     if (!topbar) return;
@@ -178,26 +191,23 @@
   }
 
   /* ---------------------------
-     Render lecture lists
+     Render all lectures
   ---------------------------- */
   function renderAll() {
-    // Ortho
-    DATA.ortho.groups.forEach(group => {
-      const mount = document.getElementById(group.mountId);
-      mount.innerHTML = "";
-      group.lectures.forEach(lec => {
-        const id = `ortho-${lec.n}`;
-        mount.appendChild(createLectureItem({ id, number: lec.n, title: lec.title, section: "ortho" }));
-      });
-    });
+    // Update global total text
+    if (totalLecturesText) totalLecturesText.textContent = `Total Lectures : ${TOTAL_LECTURES}`;
 
-    // Neuro
-    DATA.neuro.groups.forEach(group => {
-      const mount = document.getElementById(group.mountId);
-      mount.innerHTML = "";
-      group.lectures.forEach(lec => {
-        const id = `neuro-${lec.n}`;
-        mount.appendChild(createLectureItem({ id, number: lec.n, title: lec.title, section: "neuro" }));
+    Object.keys(DATA).forEach(sectionKey => {
+      const section = DATA[sectionKey];
+      section.groups.forEach(group => {
+        const mount = document.getElementById(group.mountId);
+        if (!mount) return;
+        mount.innerHTML = "";
+
+        group.lectures.forEach(lec => {
+          const id = `${section.prefix}${lec.n}`;
+          mount.appendChild(createLectureItem({ id, number: lec.n, title: lec.title, section: sectionKey }));
+        });
       });
     });
 
@@ -229,14 +239,13 @@
     t.className = "lectureTitle";
     t.textContent = `${number}. ${title}`;
 
-    // (Removed) meta line under lecture (Orthopedics/Neurology)
+    // No meta line under lecture (as requested)
     text.appendChild(t);
 
     li.appendChild(ck);
     li.appendChild(text);
 
     if (input.checked) li.classList.add("completed");
-
     return li;
   }
 
@@ -257,7 +266,6 @@
   function onToggleLecture(id, checked, li, section) {
     progressState[id] = checked;
     saveState();
-
     li.classList.toggle("completed", checked);
 
     if (checked) {
@@ -284,9 +292,12 @@
   }
 
   function getGlobalCompleted() {
+    // Count only valid lecture IDs from DATA (safe against leftovers)
     const valid = new Set();
-    DATA.ortho.groups.forEach(g => g.lectures.forEach(l => valid.add(`ortho-${l.n}`)));
-    DATA.neuro.groups.forEach(g => g.lectures.forEach(l => valid.add(`neuro-${l.n}`)));
+    Object.keys(DATA).forEach(sectionKey => {
+      const section = DATA[sectionKey];
+      section.groups.forEach(g => g.lectures.forEach(l => valid.add(`${section.prefix}${l.n}`)));
+    });
 
     let c = 0;
     for (const id of valid) if (progressState[id]) c++;
@@ -305,24 +316,29 @@
     setBar(globalBar, globalGlow, globalPct);
 
     // Ortho
-    const orthoDone = countCompleted("ortho-");
+    const orthoDone = countCompleted(DATA.ortho.prefix);
     const orthoPct = Math.round((orthoDone / DATA.ortho.total) * 100);
     orthoCountText.textContent = `${orthoDone} / ${DATA.ortho.total} completed`;
     orthoPercentText.textContent = `${orthoPct}%`;
     setBar(orthoBar, orthoGlow, orthoPct);
+    orthoComplete.hidden = !(orthoDone === DATA.ortho.total);
 
     // Neuro
-    const neuroDone = countCompleted("neuro-");
+    const neuroDone = countCompleted(DATA.neuro.prefix);
     const neuroPct = Math.round((neuroDone / DATA.neuro.total) * 100);
     neuroCountText.textContent = `${neuroDone} / ${DATA.neuro.total} completed`;
     neuroPercentText.textContent = `${neuroPct}%`;
     setBar(neuroBar, neuroGlow, neuroPct);
-
-    // Completion banners
-    orthoComplete.hidden = !(orthoDone === DATA.ortho.total);
     neuroComplete.hidden = !(neuroDone === DATA.neuro.total);
 
-    // Keep header height synced if lines wrap on smaller screens
+    // Health
+    const healthDone = countCompleted(DATA.health.prefix);
+    const healthPct = Math.round((healthDone / DATA.health.total) * 100);
+    healthCountText.textContent = `${healthDone} / ${DATA.health.total} completed`;
+    healthPercentText.textContent = `${healthPct}%`;
+    setBar(healthBar, healthGlow, healthPct);
+    healthComplete.hidden = !(healthDone === DATA.health.total);
+
     syncHeaderHeight();
   }
 
@@ -335,19 +351,14 @@
   /* ---------------------------
      Completion celebration
   ---------------------------- */
-  function checkSectionCompletion(section) {
-    if (section === "ortho") {
-      const done = countCompleted("ortho-");
-      if (done === DATA.ortho.total) {
-        showToast("🎉 Orthopedics Completed ✅");
-        microConfetti();
-      }
-    } else if (section === "neuro") {
-      const done = countCompleted("neuro-");
-      if (done === DATA.neuro.total) {
-        showToast("🎉 Neurology Completed ✅");
-        microConfetti();
-      }
+  function checkSectionCompletion(sectionKey) {
+    const section = DATA[sectionKey];
+    if (!section) return;
+
+    const done = countCompleted(section.prefix);
+    if (done === section.total) {
+      showToast(`🎉 ${sectionKey === "health" ? "Healthcare" : sectionKey.charAt(0).toUpperCase()+sectionKey.slice(1)} Completed ✅`);
+      microConfetti();
     }
   }
 
@@ -375,10 +386,7 @@
       p.animate([
         { transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 0.95 },
         { transform: `translate3d(${drift}px, 105vh, 0) rotate(${360 + Math.random()*360}deg)`, opacity: 0.0 }
-      ], {
-        duration: dur,
-        easing: "cubic-bezier(.2,.9,.2,1)"
-      });
+      ], { duration: dur, easing: "cubic-bezier(.2,.9,.2,1)" });
 
       document.body.appendChild(p);
       setTimeout(() => p.remove(), dur + 50);
@@ -389,27 +397,22 @@
      Toast
   ---------------------------- */
   let toastTimer = null;
-
   function showToast(message) {
     toast.textContent = message;
     toast.hidden = false;
     toast.classList.remove("toast--show");
-    void toast.offsetWidth; // restart animation
+    void toast.offsetWidth;
     toast.classList.add("toast--show");
 
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.hidden = true;
-    }, 2200);
+    toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
   }
 
   /* ---------------------------
      Navigation
   ---------------------------- */
   function showView(name) {
-    Object.keys(views).forEach(v => {
-      views[v].classList.toggle("view--active", v === name);
-    });
+    Object.keys(views).forEach(v => views[v].classList.toggle("view--active", v === name));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -417,17 +420,78 @@
     document.querySelectorAll("[data-nav]").forEach(btn => {
       btn.addEventListener("click", () => showView(btn.dataset.nav));
     });
-
     document.querySelectorAll("[data-back]").forEach(btn => {
       btn.addEventListener("click", () => showView("home"));
     });
   }
 
   /* ---------------------------
-     Optional sound (Web Audio)
+     Reset confirmation modal
+  ---------------------------- */
+  let pendingResetSection = null;
+
+  function openConfirm(sectionKey) {
+    pendingResetSection = sectionKey;
+    const name = DATA[sectionKey]?.nameAr || "هذه المادة";
+    confirmText.textContent = `هل أنت متأكد من إعادة تعيين تقدمك في مادة "${name}" ؟`;
+    confirmModal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeConfirm() {
+    pendingResetSection = null;
+    confirmModal.setAttribute("aria-hidden", "true");
+  }
+
+  function resetSection(sectionKey) {
+    const section = DATA[sectionKey];
+    if (!section) return;
+
+    // Remove all keys for this prefix
+    Object.keys(progressState).forEach(k => {
+      if (k.startsWith(section.prefix)) delete progressState[k];
+    });
+    saveState();
+
+    // Update UI checkboxes for that section
+    document.querySelectorAll(`.lectureItem[data-section="${sectionKey}"]`).forEach(item => {
+      item.classList.remove("completed");
+      const input = item.querySelector("input[type='checkbox']");
+      if (input) input.checked = false;
+    });
+
+    updateAllProgress();
+    showToast(`↺ تم إعادة التعيين لمادة "${section.nameAr}"`);
+  }
+
+  function initResetButtons() {
+    document.querySelectorAll("[data-reset]").forEach(btn => {
+      btn.addEventListener("click", () => openConfirm(btn.dataset.reset));
+    });
+
+    // Modal buttons
+    confirmCancel.addEventListener("click", closeConfirm);
+    confirmYes.addEventListener("click", () => {
+      if (pendingResetSection) resetSection(pendingResetSection);
+      closeConfirm();
+    });
+
+    // Close when clicking backdrop
+    confirmModal.querySelectorAll("[data-close]").forEach(el => {
+      el.addEventListener("click", closeConfirm);
+    });
+
+    // ESC closes
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && confirmModal.getAttribute("aria-hidden") === "false") {
+        closeConfirm();
+      }
+    });
+  }
+
+  /* ---------------------------
+     Optional sound
   ---------------------------- */
   let audioCtx = null;
-
   function playTick() {
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -449,14 +513,18 @@
 
       osc.start(t);
       osc.stop(t + 0.11);
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   }
 
-  function glowPulse(section) {
-    const el = section === "ortho" ? orthoGlow : section === "neuro" ? neuroGlow : globalGlow;
+  function glowPulse(sectionKey) {
+    const map = {
+      ortho: orthoGlow,
+      neuro: neuroGlow,
+      health: healthGlow
+    };
+    const el = map[sectionKey] || globalGlow;
     if (!el) return;
+
     el.animate([{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }], {
       duration: 520,
       easing: "ease-in-out"
@@ -469,17 +537,16 @@
   function init() {
     renderAll();
     initNav();
+    initResetButtons();
 
-    // Sync header height now + on resize/orientation changes
     syncHeaderHeight();
     window.addEventListener("resize", syncHeaderHeight);
 
-    // Nice loader
     setTimeout(() => loader.setAttribute("aria-hidden", "true"), 450);
 
-    // If already completed
     checkSectionCompletion("ortho");
     checkSectionCompletion("neuro");
+    checkSectionCompletion("health");
   }
 
   document.addEventListener("DOMContentLoaded", init);
