@@ -15,11 +15,11 @@
 </head>
 
 <body>
-  <!-- Subtle animated background layer -->
+  <!-- Background -->
   <div class="bg" aria-hidden="true"></div>
   <div class="particles" aria-hidden="true"></div>
 
-  <!-- Loading overlay -->
+  <!-- Loading -->
   <div id="loader" class="loader" aria-hidden="true">
     <div class="loader__card">
       <div class="loader__ring"></div>
@@ -30,16 +30,14 @@
     </div>
   </div>
 
-  <!-- FIXED STICKY HEADER -->
+  <!-- TOPBAR (HOME ONLY) -->
   <header class="topbar" role="banner" id="topbar">
     <div class="topbar__inner">
-      <!-- Branding -->
       <div class="brand" dir="ltr" aria-label="Checklist Branding">
         <span class="brand__icon" aria-hidden="true">✅</span>
         <span class="brand__title">Checklist</span>
       </div>
 
-      <!-- Global progress -->
       <div class="global">
         <div class="global__row">
           <div class="global__title">التقدم العام</div>
@@ -71,7 +69,6 @@
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main class="app" id="app" role="main">
     <!-- HOME -->
     <section id="home" class="view view--active" aria-label="Home">
@@ -82,10 +79,7 @@
 [سُورَةُ الأَحۡزَابِ: ٣]</p>
         </div>
 
-        <!-- Home layout as requested:
-             Top row: Ortho + Healthcare
-             Bottom row: Neuro (full width)
-        -->
+        <!-- المطلوب: يظهر الاورثو وبجانبه الرعاية الصحية وتحته النيورو -->
         <div class="categoryGrid categoryGrid--three" role="navigation" aria-label="Categories">
           <button class="categoryCard" data-nav="ortho" type="button" aria-label="Open Orthopedics">
             <div class="categoryCard__glow" aria-hidden="true"></div>
@@ -123,21 +117,14 @@
       </div>
     </section>
 
-    <!-- ORTHO VIEW -->
+    <!-- ORTHO -->
     <section id="ortho" class="view" aria-label="Orthopedics">
       <div class="container">
         <div class="sectionTop">
-          <div class="sectionActions">
-            <button class="backBtn" data-back type="button" aria-label="Back to Home">
-              <span aria-hidden="true">←</span>
-              <span>رجوع</span>
-            </button>
-
-            <button class="resetBtn" data-reset="ortho" type="button" aria-label="Reset Orthopedics">
-              <span aria-hidden="true">↺</span>
-              <span>إعادة التعيين</span>
-            </button>
-          </div>
+          <button class="backBtn" data-back type="button" aria-label="Back to Home">
+            <span aria-hidden="true">←</span>
+            <span>رجوع</span>
+          </button>
 
           <div class="sectionHead glass">
             <div class="sectionHead__row">
@@ -155,15 +142,18 @@
               </div>
             </div>
 
-            <div class="sectionComplete" id="orthoComplete" hidden>
-              <span class="sectionComplete__icon">✅</span>
-              <span class="sectionComplete__text">Orthopedics Completed</span>
+            <!-- Reset button مكان "Completed ✅" -->
+            <div class="sectionHead__footer">
+              <button class="resetInlineBtn" data-reset="ortho" type="button">
+                <span aria-hidden="true">↺</span>
+                <span>إعادة تعيين التقدم</span>
+              </button>
             </div>
           </div>
         </div>
 
         <div class="twoColLayout">
-          <div class="col col--left" aria-label="Left Lecturers">
+          <div class="col col--left">
             <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. وليد حداد</div>
@@ -179,7 +169,7 @@
             </div>
           </div>
 
-          <div class="col col--right" aria-label="Right Lecturers">
+          <div class="col col--right">
             <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. جمال العمري</div>
@@ -212,21 +202,14 @@
       </div>
     </section>
 
-    <!-- HEALTHCARE VIEW -->
+    <!-- HEALTHCARE -->
     <section id="health" class="view" aria-label="Healthcare">
       <div class="container">
         <div class="sectionTop">
-          <div class="sectionActions">
-            <button class="backBtn" data-back type="button" aria-label="Back to Home">
-              <span aria-hidden="true">←</span>
-              <span>رجوع</span>
-            </button>
-
-            <button class="resetBtn" data-reset="health" type="button" aria-label="Reset Healthcare">
-              <span aria-hidden="true">↺</span>
-              <span>إعادة التعيين</span>
-            </button>
-          </div>
+          <button class="backBtn" data-back type="button" aria-label="Back to Home">
+            <span aria-hidden="true">←</span>
+            <span>رجوع</span>
+          </button>
 
           <div class="sectionHead glass">
             <div class="sectionHead__row">
@@ -244,14 +227,17 @@
               </div>
             </div>
 
-            <div class="sectionComplete sectionComplete--cyan" id="healthComplete" hidden>
-              <span class="sectionComplete__icon">✅</span>
-              <span class="sectionComplete__text">Healthcare Completed</span>
+            <!-- Reset button -->
+            <div class="sectionHead__footer">
+              <button class="resetInlineBtn resetInlineBtn--cyan" data-reset="health" type="button">
+                <span aria-hidden="true">↺</span>
+                <span>إعادة تعيين التقدم</span>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Two cards: Med / Final -->
+        <!-- محاضرات الرعاية الصحية: ميد + فاينل -->
         <div class="twoColLayout twoColLayout--health">
           <div class="col col--right">
             <div class="lecturerCard glass lecturerCard--cyan">
@@ -274,21 +260,14 @@
       </div>
     </section>
 
-    <!-- NEURO VIEW -->
+    <!-- NEURO -->
     <section id="neuro" class="view" aria-label="Neurology">
       <div class="container">
         <div class="sectionTop">
-          <div class="sectionActions">
-            <button class="backBtn" data-back type="button" aria-label="Back to Home">
-              <span aria-hidden="true">←</span>
-              <span>رجوع</span>
-            </button>
-
-            <button class="resetBtn" data-reset="neuro" type="button" aria-label="Reset Neurology">
-              <span aria-hidden="true">↺</span>
-              <span>إعادة التعيين</span>
-            </button>
-          </div>
+          <button class="backBtn" data-back type="button" aria-label="Back to Home">
+            <span aria-hidden="true">←</span>
+            <span>رجوع</span>
+          </button>
 
           <div class="sectionHead glass">
             <div class="sectionHead__row">
@@ -306,15 +285,18 @@
               </div>
             </div>
 
-            <div class="sectionComplete sectionComplete--cyan" id="neuroComplete" hidden>
-              <span class="sectionComplete__icon">✅</span>
-              <span class="sectionComplete__text">Neurology Completed</span>
+            <!-- Reset button -->
+            <div class="sectionHead__footer">
+              <button class="resetInlineBtn resetInlineBtn--cyan" data-reset="neuro" type="button">
+                <span aria-hidden="true">↺</span>
+                <span>إعادة تعيين التقدم</span>
+              </button>
             </div>
           </div>
         </div>
 
         <div class="twoColLayout twoColLayout--neuro">
-          <div class="col col--right" aria-label="Neuromedicine">
+          <div class="col col--right">
             <div class="lecturerCard glass lecturerCard--cyan">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name" dir="ltr">💉🧠 Neuromedicine</div>
@@ -323,7 +305,7 @@
             </div>
           </div>
 
-          <div class="col col--left" aria-label="Neurosurgery">
+          <div class="col col--left">
             <div class="lecturerCard glass lecturerCard--cyan">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name" dir="ltr">🪚🧠 Neurosurgery (Online lectures)</div>
@@ -339,14 +321,12 @@
   <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
-  <!-- Reset confirmation modal -->
+  <!-- Confirm Modal (Popup فوق الصفحة) -->
   <div class="modal" id="confirmModal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal__backdrop" data-close></div>
     <div class="modal__card" role="document">
       <div class="modal__title arabic-heading">تأكيد</div>
-      <div class="modal__text" id="confirmText">
-        هل أنت متأكد من إعادة تعيين تقدمك؟
-      </div>
+      <div class="modal__text" id="confirmText">هل أنت متأكد؟</div>
 
       <div class="modal__actions">
         <button class="modalBtn modalBtn--ghost" id="confirmCancel" type="button">تراجع</button>
