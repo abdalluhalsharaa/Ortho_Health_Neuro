@@ -1,17 +1,15 @@
 /* =========================================================
    Checklist - Vanilla JS
-   - 3 subjects: Ortho (20) + Neuro (15) + Healthcare (14)
-   - Global total = 49
-   - LocalStorage persistence
-   - Reset per subject with elegant confirmation modal
+   Fixes:
+   1) Healthcare lectures now render reliably.
+   2) Reset confirmation is a real popup modal.
+   3) Global top header (Checklist + global progress) hides on any subject view.
+   4) Removed "Completed ✅" banners entirely; reset button inside subject header.
    ========================================================= */
 
 (() => {
   "use strict";
 
-  /* ---------------------------
-     Data
-  ---------------------------- */
   const DATA = {
     ortho: {
       nameAr: "اورثو",
@@ -33,9 +31,7 @@
           { n: 10, title: "Principles in spine fractures" },
           { n: 11, title: "Bone tumor x ray" }
         ]},
-        { mountId: "ortho-jamal", lectures: [
-          { n: 12, title: "Upper limb" }
-        ]},
+        { mountId: "ortho-jamal", lectures: [{ n: 12, title: "Upper limb" }]},
         { mountId: "ortho-samir", lectures: [
           { n: 13, title: "Musculoskeletal infections" },
           { n: 14, title: "Arthritis in hip & knee" }
@@ -47,9 +43,7 @@
           { n: 18, title: "DDH" },
           { n: 19, title: "Genu varus and valgus" }
         ]},
-        { mountId: "ortho-khreisat", lectures: [
-          { n: 20, title: "Lower limb" }
-        ]}
+        { mountId: "ortho-khreisat", lectures: [{ n: 20, title: "Lower limb" }]}
       ]
     },
 
@@ -85,7 +79,6 @@
       total: 14,
       prefix: "health-",
       groups: [
-        // Med 1-6
         { mountId: "health-med", lectures: [
           { n: 1, title: "Immunization" },
           { n: 2, title: "Primary health care" },
@@ -94,7 +87,6 @@
           { n: 5, title: "Preventive Medicine" },
           { n: 6, title: "Obesity" }
         ]},
-        // Final 7-14
         { mountId: "health-final", lectures: [
           { n: 7, title: "Evidence based medicine" },
           { n: 8, title: "Communication skills" },
@@ -111,10 +103,8 @@
 
   const TOTAL_LECTURES = DATA.ortho.total + DATA.neuro.total + DATA.health.total; // 49
 
-  /* ---------------------------
-     Local Storage
-  ---------------------------- */
-  const STORAGE_KEY = "checklist-progress-v2"; // bumped key due to new subject added
+  /* Storage */
+  const STORAGE_KEY = "checklist-progress-v3";
   let progressState = loadState();
 
   function loadState() {
@@ -131,15 +121,35 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState));
   }
 
-  /* ---------------------------
-     DOM refs
-  ---------------------------- */
+  /* DOM */
   const loader = document.getElementById("loader");
   const toast = document.getElementById("toast");
   const topbar = document.getElementById("topbar");
+  const app = document.getElementById("app");
 
   const totalLecturesText = document.getElementById("totalLecturesText");
+  const globalCompletedText = document.getElementById("globalCompletedText");
+  const globalRemainingText = document.getElementById("globalRemainingText");
+  const globalPercentText = document.getElementById("globalPercentText");
+  const globalBar = document.getElementById("globalBar");
+  const globalGlow = document.getElementById("globalGlow");
 
+  const orthoCountText = document.getElementById("orthoCountText");
+  const orthoPercentText = document.getElementById("orthoPercentText");
+  const orthoBar = document.getElementById("orthoBar");
+  const orthoGlow = document.getElementById("orthoGlow");
+
+  const neuroCountText = document.getElementById("neuroCountText");
+  const neuroPercentText = document.getElementById("neuroPercentText");
+  const neuroBar = document.getElementById("neuroBar");
+  const neuroGlow = document.getElementById("neuroGlow");
+
+  const healthCountText = document.getElementById("healthCountText");
+  const healthPercentText = document.getElementById("healthPercentText");
+  const healthBar = document.getElementById("healthBar");
+  const healthGlow = document.getElementById("healthGlow");
+
+  // Views
   const views = {
     home: document.getElementById("home"),
     ortho: document.getElementById("ortho"),
@@ -147,63 +157,32 @@
     health: document.getElementById("health")
   };
 
-  // Global header elements
-  const globalCompletedText = document.getElementById("globalCompletedText");
-  const globalRemainingText = document.getElementById("globalRemainingText");
-  const globalPercentText = document.getElementById("globalPercentText");
-  const globalBar = document.getElementById("globalBar");
-  const globalGlow = document.getElementById("globalGlow");
-
-  // Ortho section header
-  const orthoCountText = document.getElementById("orthoCountText");
-  const orthoPercentText = document.getElementById("orthoPercentText");
-  const orthoBar = document.getElementById("orthoBar");
-  const orthoGlow = document.getElementById("orthoGlow");
-  const orthoComplete = document.getElementById("orthoComplete");
-
-  // Neuro section header
-  const neuroCountText = document.getElementById("neuroCountText");
-  const neuroPercentText = document.getElementById("neuroPercentText");
-  const neuroBar = document.getElementById("neuroBar");
-  const neuroGlow = document.getElementById("neuroGlow");
-  const neuroComplete = document.getElementById("neuroComplete");
-
-  // Health section header
-  const healthCountText = document.getElementById("healthCountText");
-  const healthPercentText = document.getElementById("healthPercentText");
-  const healthBar = document.getElementById("healthBar");
-  const healthGlow = document.getElementById("healthGlow");
-  const healthComplete = document.getElementById("healthComplete");
-
   // Modal
   const confirmModal = document.getElementById("confirmModal");
   const confirmText = document.getElementById("confirmText");
   const confirmCancel = document.getElementById("confirmCancel");
   const confirmYes = document.getElementById("confirmYes");
 
-  /* ---------------------------
-     Header height sync
-  ---------------------------- */
+  /* Header height (home only) */
   function syncHeaderHeight() {
     if (!topbar) return;
+    if (topbar.classList.contains("is-hidden")) return;
     const h = Math.ceil(topbar.getBoundingClientRect().height);
     document.documentElement.style.setProperty("--topbar-h", `${h}px`);
   }
 
-  /* ---------------------------
-     Render all lectures
-  ---------------------------- */
+  /* Render */
   function renderAll() {
-    // Update global total text
     if (totalLecturesText) totalLecturesText.textContent = `Total Lectures : ${TOTAL_LECTURES}`;
 
+    // Render all sections lists
     Object.keys(DATA).forEach(sectionKey => {
       const section = DATA[sectionKey];
       section.groups.forEach(group => {
         const mount = document.getElementById(group.mountId);
         if (!mount) return;
-        mount.innerHTML = "";
 
+        mount.innerHTML = "";
         group.lectures.forEach(lec => {
           const id = `${section.prefix}${lec.n}`;
           mount.appendChild(createLectureItem({ id, number: lec.n, title: lec.title, section: sectionKey }));
@@ -229,7 +208,6 @@
     input.type = "checkbox";
     input.checked = !!progressState[id];
     input.addEventListener("change", () => onToggleLecture(id, input.checked, li, section));
-
     ck.appendChild(input);
 
     const text = document.createElement("div");
@@ -238,8 +216,6 @@
     const t = document.createElement("div");
     t.className = "lectureTitle";
     t.textContent = `${number}. ${title}`;
-
-    // No meta line under lecture (as requested)
     text.appendChild(t);
 
     li.appendChild(ck);
@@ -260,29 +236,24 @@
     });
   }
 
-  /* ---------------------------
-     Toggle lecture
-  ---------------------------- */
-  function onToggleLecture(id, checked, li, section) {
+  function onToggleLecture(id, checked, li, sectionKey) {
     progressState[id] = checked;
     saveState();
+
     li.classList.toggle("completed", checked);
 
     if (checked) {
       playTick();
-      glowPulse(section);
+      glowPulse(sectionKey);
       showToast(`✅ تم إنجاز المحاضرة ${id.split("-")[1]}`);
     } else {
       showToast(`↩️ تم إلغاء تحديد المحاضرة ${id.split("-")[1]}`);
     }
 
     updateAllProgress();
-    checkSectionCompletion(section);
   }
 
-  /* ---------------------------
-     Progress calculations
-  ---------------------------- */
+  /* Progress */
   function countCompleted(prefix) {
     let c = 0;
     for (const k in progressState) {
@@ -292,10 +263,9 @@
   }
 
   function getGlobalCompleted() {
-    // Count only valid lecture IDs from DATA (safe against leftovers)
     const valid = new Set();
-    Object.keys(DATA).forEach(sectionKey => {
-      const section = DATA[sectionKey];
+    Object.keys(DATA).forEach(key => {
+      const section = DATA[key];
       section.groups.forEach(g => g.lectures.forEach(l => valid.add(`${section.prefix}${l.n}`)));
     });
 
@@ -321,7 +291,6 @@
     orthoCountText.textContent = `${orthoDone} / ${DATA.ortho.total} completed`;
     orthoPercentText.textContent = `${orthoPct}%`;
     setBar(orthoBar, orthoGlow, orthoPct);
-    orthoComplete.hidden = !(orthoDone === DATA.ortho.total);
 
     // Neuro
     const neuroDone = countCompleted(DATA.neuro.prefix);
@@ -329,7 +298,6 @@
     neuroCountText.textContent = `${neuroDone} / ${DATA.neuro.total} completed`;
     neuroPercentText.textContent = `${neuroPct}%`;
     setBar(neuroBar, neuroGlow, neuroPct);
-    neuroComplete.hidden = !(neuroDone === DATA.neuro.total);
 
     // Health
     const healthDone = countCompleted(DATA.health.prefix);
@@ -337,8 +305,8 @@
     healthCountText.textContent = `${healthDone} / ${DATA.health.total} completed`;
     healthPercentText.textContent = `${healthPct}%`;
     setBar(healthBar, healthGlow, healthPct);
-    healthComplete.hidden = !(healthDone === DATA.health.total);
 
+    // Keep header height correct on home
     syncHeaderHeight();
   }
 
@@ -348,71 +316,23 @@
     glowEl.style.opacity = clamped > 0 ? "1" : "0";
   }
 
-  /* ---------------------------
-     Completion celebration
-  ---------------------------- */
-  function checkSectionCompletion(sectionKey) {
-    const section = DATA[sectionKey];
-    if (!section) return;
-
-    const done = countCompleted(section.prefix);
-    if (done === section.total) {
-      showToast(`🎉 ${sectionKey === "health" ? "Healthcare" : sectionKey.charAt(0).toUpperCase()+sectionKey.slice(1)} Completed ✅`);
-      microConfetti();
-    }
-  }
-
-  function microConfetti() {
-    const count = 18;
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement("span");
-      p.style.position = "fixed";
-      p.style.zIndex = "90";
-      p.style.left = `${Math.random() * 100}vw`;
-      p.style.top = `-12px`;
-      p.style.width = "8px";
-      p.style.height = "10px";
-      p.style.borderRadius = "3px";
-      p.style.opacity = "0.9";
-      p.style.background = (Math.random() > 0.5)
-        ? "rgba(39,255,133,.95)"
-        : "rgba(61,220,255,.95)";
-      p.style.boxShadow = "0 0 14px rgba(255,255,255,.14)";
-      p.style.transform = `rotate(${Math.random() * 180}deg)`;
-
-      const dur = 900 + Math.random() * 700;
-      const drift = (Math.random() - 0.5) * 120;
-
-      p.animate([
-        { transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 0.95 },
-        { transform: `translate3d(${drift}px, 105vh, 0) rotate(${360 + Math.random()*360}deg)`, opacity: 0.0 }
-      ], { duration: dur, easing: "cubic-bezier(.2,.9,.2,1)" });
-
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), dur + 50);
-    }
-  }
-
-  /* ---------------------------
-     Toast
-  ---------------------------- */
-  let toastTimer = null;
-  function showToast(message) {
-    toast.textContent = message;
-    toast.hidden = false;
-    toast.classList.remove("toast--show");
-    void toast.offsetWidth;
-    toast.classList.add("toast--show");
-
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
-  }
-
-  /* ---------------------------
-     Navigation
-  ---------------------------- */
+  /* Navigation + hide topbar on subjects */
   function showView(name) {
     Object.keys(views).forEach(v => views[v].classList.toggle("view--active", v === name));
+
+    const inHome = (name === "home");
+
+    // hide/show topbar
+    if (inHome) {
+      topbar.classList.remove("is-hidden");
+      app.classList.remove("no-topbar");
+      // update height after shown
+      requestAnimationFrame(syncHeaderHeight);
+    } else {
+      topbar.classList.add("is-hidden");
+      app.classList.add("no-topbar");
+    }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -425,34 +345,37 @@
     });
   }
 
-  /* ---------------------------
-     Reset confirmation modal
-  ---------------------------- */
+  /* Reset modal (popup) */
   let pendingResetSection = null;
 
   function openConfirm(sectionKey) {
     pendingResetSection = sectionKey;
     const name = DATA[sectionKey]?.nameAr || "هذه المادة";
     confirmText.textContent = `هل أنت متأكد من إعادة تعيين تقدمك في مادة "${name}" ؟`;
+
     confirmModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden"; // lock scroll
+    // Focus for better UX
+    setTimeout(() => confirmYes.focus(), 0);
   }
 
   function closeConfirm() {
     pendingResetSection = null;
     confirmModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = ""; // unlock scroll
   }
 
   function resetSection(sectionKey) {
     const section = DATA[sectionKey];
     if (!section) return;
 
-    // Remove all keys for this prefix
     Object.keys(progressState).forEach(k => {
       if (k.startsWith(section.prefix)) delete progressState[k];
     });
+
     saveState();
 
-    // Update UI checkboxes for that section
+    // update UI only for that section
     document.querySelectorAll(`.lectureItem[data-section="${sectionKey}"]`).forEach(item => {
       item.classList.remove("completed");
       const input = item.querySelector("input[type='checkbox']");
@@ -468,19 +391,17 @@
       btn.addEventListener("click", () => openConfirm(btn.dataset.reset));
     });
 
-    // Modal buttons
     confirmCancel.addEventListener("click", closeConfirm);
     confirmYes.addEventListener("click", () => {
       if (pendingResetSection) resetSection(pendingResetSection);
       closeConfirm();
     });
 
-    // Close when clicking backdrop
+    // backdrop click closes
     confirmModal.querySelectorAll("[data-close]").forEach(el => {
       el.addEventListener("click", closeConfirm);
     });
 
-    // ESC closes
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && confirmModal.getAttribute("aria-hidden") === "false") {
         closeConfirm();
@@ -488,15 +409,25 @@
     });
   }
 
-  /* ---------------------------
-     Optional sound
-  ---------------------------- */
+  /* Toast */
+  let toastTimer = null;
+  function showToast(message) {
+    toast.textContent = message;
+    toast.hidden = false;
+    toast.classList.remove("toast--show");
+    void toast.offsetWidth;
+    toast.classList.add("toast--show");
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
+  }
+
+  /* Optional sound */
   let audioCtx = null;
   function playTick() {
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const t = audioCtx.currentTime;
-
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
 
@@ -517,11 +448,7 @@
   }
 
   function glowPulse(sectionKey) {
-    const map = {
-      ortho: orthoGlow,
-      neuro: neuroGlow,
-      health: healthGlow
-    };
+    const map = { ortho: orthoGlow, neuro: neuroGlow, health: healthGlow };
     const el = map[sectionKey] || globalGlow;
     if (!el) return;
 
@@ -531,22 +458,17 @@
     });
   }
 
-  /* ---------------------------
-     Init
-  ---------------------------- */
+  /* Init */
   function init() {
     renderAll();
     initNav();
     initResetButtons();
 
-    syncHeaderHeight();
+    // correct header height on home
+    requestAnimationFrame(syncHeaderHeight);
     window.addEventListener("resize", syncHeaderHeight);
 
     setTimeout(() => loader.setAttribute("aria-hidden", "true"), 450);
-
-    checkSectionCompletion("ortho");
-    checkSectionCompletion("neuro");
-    checkSectionCompletion("health");
   }
 
   document.addEventListener("DOMContentLoaded", init);
