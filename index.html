@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <!-- TOPBAR (HOME ONLY) -->
+  <!-- TOPBAR (HOME ONLY) - NOW NORMAL (NOT STICKY/FIXED) -->
   <header class="topbar" role="banner" id="topbar">
     <div class="topbar__inner">
       <div class="brand" dir="ltr" aria-label="Checklist Branding">
@@ -114,6 +114,13 @@
             </div>
           </button>
         </div>
+
+        <!-- Footer text at the end of Home -->
+        <div class="homeFooter" aria-label="Academic wishes">
+          <div class="homeFooter__text arabic-heading">
+            مع تمنيات الفريق الأكاديمي لكم بالنجاح <span class="homeFooter__heart" aria-hidden="true">💚</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -142,7 +149,6 @@
               </div>
             </div>
 
-            <!-- Reset button مكان "Completed ✅" -->
             <div class="sectionHead__footer">
               <button class="resetInlineBtn" data-reset="ortho" type="button">
                 <span aria-hidden="true">↺</span>
@@ -227,7 +233,6 @@
               </div>
             </div>
 
-            <!-- Reset button -->
             <div class="sectionHead__footer">
               <button class="resetInlineBtn resetInlineBtn--cyan" data-reset="health" type="button">
                 <span aria-hidden="true">↺</span>
@@ -237,7 +242,6 @@
           </div>
         </div>
 
-        <!-- محاضرات الرعاية الصحية: ميد + فاينل -->
         <div class="twoColLayout twoColLayout--health">
           <div class="col col--right">
             <div class="lecturerCard glass lecturerCard--cyan">
@@ -285,7 +289,6 @@
               </div>
             </div>
 
-            <!-- Reset button -->
             <div class="sectionHead__footer">
               <button class="resetInlineBtn resetInlineBtn--cyan" data-reset="neuro" type="button">
                 <span aria-hidden="true">↺</span>
@@ -321,7 +324,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
-  <!-- Confirm Modal (Popup فوق الصفحة) -->
+  <!-- Confirm Modal -->
   <div class="modal" id="confirmModal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal__backdrop" data-close></div>
     <div class="modal__card" role="document">
