@@ -11,11 +11,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- GoatCounter (PRIVATE analytics - not visible to users) -->
-  <script data-goatcounter="https://abdullah.goatcounter.com/count"
-          async src="//gc.zgo.at/count.js"></script>
-  <!-- GoatCounter uses this single script tag integration pattern [1](https://engineerhow.com/how-to-host-static-html-cloudflare-pages-github/) -->
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -23,7 +18,6 @@
   <!-- Subtle animated background layer -->
   <div class="bg" aria-hidden="true"></div>
   <div class="particles" aria-hidden="true"></div>
-
 
   <!-- Loading overlay -->
   <div id="loader" class="loader" aria-hidden="true">
@@ -41,7 +35,7 @@
     <div class="topbar__inner">
       <!-- Branding -->
       <div class="brand" dir="ltr" aria-label="Checklist Branding">
-        <span class="brand__icon" aria-hidden="true">✦</span>
+        <span class="brand__icon" aria-hidden="true">✅</span>
         <span class="brand__title">Checklist</span>
       </div>
 
@@ -49,17 +43,17 @@
       <div class="global">
         <div class="global__row">
           <div class="global__title">التقدم العام</div>
-          <div class="global__total" id="totalLecturesText">Total Lectures : 35</div>
+          <div class="global__total" id="totalLecturesText">Total Lectures : 49</div>
         </div>
 
         <div class="global__stats">
           <div class="stat">
             <div class="stat__label">Completed</div>
-            <div class="stat__value" id="globalCompletedText">0 / 35</div>
+            <div class="stat__value" id="globalCompletedText">0 / 49</div>
           </div>
           <div class="stat">
             <div class="stat__label">Remaining</div>
-            <div class="stat__value" id="globalRemainingText">35</div>
+            <div class="stat__value" id="globalRemainingText">49</div>
           </div>
           <div class="stat stat--accent">
             <div class="stat__label">Progress</div>
@@ -83,11 +77,16 @@
     <section id="home" class="view view--active" aria-label="Home">
       <div class="container">
         <div class="hero">
-          <h1 class="hero__title arabic-heading">متابعة محاضرات الطب</h1>
-          <p class="hero__subtitle">اختر القسم — تابِع التقدم — واحفظ إنجازك تلقائياً.</p>
+          <h1 class="hero__title arabic-heading">بسم الله الرحمن الرحيم</h1>
+          <p class="hero__subtitle">{ وَتَوَكَّلۡ عَلَى ٱللَّهِۚ وَكَفَىٰ بِٱللَّهِ وَكِیلࣰا }
+[سُورَةُ الأَحۡزَابِ: ٣]</p>
         </div>
 
-        <div class="categoryGrid" role="navigation" aria-label="Categories">
+        <!-- Home layout as requested:
+             Top row: Ortho + Healthcare
+             Bottom row: Neuro (full width)
+        -->
+        <div class="categoryGrid categoryGrid--three" role="navigation" aria-label="Categories">
           <button class="categoryCard" data-nav="ortho" type="button" aria-label="Open Orthopedics">
             <div class="categoryCard__glow" aria-hidden="true"></div>
             <div class="categoryCard__content">
@@ -99,9 +98,20 @@
             </div>
           </button>
 
-          <button class="categoryCard" data-nav="neuro" type="button" aria-label="Open Neurology">
-            <div class="categoryCard__glow" aria-hidden="true"></div>
-            <div class="categoryCard__content">
+          <button class="categoryCard" data-nav="health" type="button" aria-label="Open Healthcare">
+            <div class="categoryCard__glow categoryCard__glow--cyan" aria-hidden="true"></div>
+            <div class="categoryCard__content categoryCard__content--cyan">
+              <div class="categoryCard__icon" aria-hidden="true">👨🏻‍⚕️</div>
+              <div class="categoryCard__text">
+                <div class="categoryCard__title arabic-heading">الرعاية الصحية</div>
+                <div class="categoryCard__meta">Healthcare • 14 Lectures</div>
+              </div>
+            </div>
+          </button>
+
+          <button class="categoryCard categoryCard--wide" data-nav="neuro" type="button" aria-label="Open Neurology">
+            <div class="categoryCard__glow categoryCard__glow--blue" aria-hidden="true"></div>
+            <div class="categoryCard__content categoryCard__content--blue">
               <div class="categoryCard__icon" aria-hidden="true">🧠</div>
               <div class="categoryCard__text">
                 <div class="categoryCard__title arabic-heading">نيورو</div>
@@ -110,8 +120,6 @@
             </div>
           </button>
         </div>
-
-        <!-- (Removed) tip card: "ميزة مهمة كل تقدمك محفوظ ..." -->
       </div>
     </section>
 
@@ -119,10 +127,17 @@
     <section id="ortho" class="view" aria-label="Orthopedics">
       <div class="container">
         <div class="sectionTop">
-          <button class="backBtn" data-back type="button" aria-label="Back to Home">
-            <span aria-hidden="true">←</span>
-            <span>رجوع</span>
-          </button>
+          <div class="sectionActions">
+            <button class="backBtn" data-back type="button" aria-label="Back to Home">
+              <span aria-hidden="true">←</span>
+              <span>رجوع</span>
+            </button>
+
+            <button class="resetBtn" data-reset="ortho" type="button" aria-label="Reset Orthopedics">
+              <span aria-hidden="true">↺</span>
+              <span>إعادة التعيين</span>
+            </button>
+          </div>
 
           <div class="sectionHead glass">
             <div class="sectionHead__row">
@@ -147,17 +162,16 @@
           </div>
         </div>
 
-        <!-- Responsive layout -->
         <div class="twoColLayout">
           <div class="col col--left" aria-label="Left Lecturers">
-            <div class="lecturerCard glass" data-lecturer="waled">
+            <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. وليد حداد</div>
               </div>
               <ul class="lectureList" id="ortho-waled"></ul>
             </div>
 
-            <div class="lecturerCard glass" data-lecturer="osama">
+            <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. أسامة الدهامشة</div>
               </div>
@@ -166,28 +180,28 @@
           </div>
 
           <div class="col col--right" aria-label="Right Lecturers">
-            <div class="lecturerCard glass" data-lecturer="jamal">
+            <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. جمال العمري</div>
               </div>
               <ul class="lectureList" id="ortho-jamal"></ul>
             </div>
 
-            <div class="lecturerCard glass" data-lecturer="samir">
+            <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. سمير السقا</div>
               </div>
               <ul class="lectureList" id="ortho-samir"></ul>
             </div>
 
-            <div class="lecturerCard glass" data-lecturer="ananzeh">
+            <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. محمد عنانزة</div>
               </div>
               <ul class="lectureList" id="ortho-ananzeh"></ul>
             </div>
 
-            <div class="lecturerCard glass" data-lecturer="khreisat">
+            <div class="lecturerCard glass">
               <div class="lecturerCard__head">
                 <div class="lecturerCard__name arabic-heading">د. محمد الخريسات</div>
               </div>
@@ -198,14 +212,83 @@
       </div>
     </section>
 
+    <!-- HEALTHCARE VIEW -->
+    <section id="health" class="view" aria-label="Healthcare">
+      <div class="container">
+        <div class="sectionTop">
+          <div class="sectionActions">
+            <button class="backBtn" data-back type="button" aria-label="Back to Home">
+              <span aria-hidden="true">←</span>
+              <span>رجوع</span>
+            </button>
+
+            <button class="resetBtn" data-reset="health" type="button" aria-label="Reset Healthcare">
+              <span aria-hidden="true">↺</span>
+              <span>إعادة التعيين</span>
+            </button>
+          </div>
+
+          <div class="sectionHead glass">
+            <div class="sectionHead__row">
+              <div>
+                <h2 class="sectionHead__title">Healthcare Progress</h2>
+                <div class="sectionHead__sub" id="healthCountText">0 / 14 completed</div>
+              </div>
+              <div class="sectionHead__badge sectionHead__badge--cyan" id="healthPercentText">0%</div>
+            </div>
+
+            <div class="bar bar--cyan" aria-label="Healthcare Progress Bar">
+              <div class="bar__track">
+                <div class="bar__fill" id="healthBar"></div>
+                <div class="bar__glow" id="healthGlow"></div>
+              </div>
+            </div>
+
+            <div class="sectionComplete sectionComplete--cyan" id="healthComplete" hidden>
+              <span class="sectionComplete__icon">✅</span>
+              <span class="sectionComplete__text">Healthcare Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two cards: Med / Final -->
+        <div class="twoColLayout twoColLayout--health">
+          <div class="col col--right">
+            <div class="lecturerCard glass lecturerCard--cyan">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">مادة الميد</div>
+              </div>
+              <ul class="lectureList" id="health-med"></ul>
+            </div>
+          </div>
+
+          <div class="col col--left">
+            <div class="lecturerCard glass lecturerCard--cyan">
+              <div class="lecturerCard__head">
+                <div class="lecturerCard__name arabic-heading">مادة الفاينل</div>
+              </div>
+              <ul class="lectureList" id="health-final"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- NEURO VIEW -->
     <section id="neuro" class="view" aria-label="Neurology">
       <div class="container">
         <div class="sectionTop">
-          <button class="backBtn" data-back type="button" aria-label="Back to Home">
-            <span aria-hidden="true">←</span>
-            <span>رجوع</span>
-          </button>
+          <div class="sectionActions">
+            <button class="backBtn" data-back type="button" aria-label="Back to Home">
+              <span aria-hidden="true">←</span>
+              <span>رجوع</span>
+            </button>
+
+            <button class="resetBtn" data-reset="neuro" type="button" aria-label="Reset Neurology">
+              <span aria-hidden="true">↺</span>
+              <span>إعادة التعيين</span>
+            </button>
+          </div>
 
           <div class="sectionHead glass">
             <div class="sectionHead__row">
@@ -255,6 +338,22 @@
 
   <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <!-- Reset confirmation modal -->
+  <div class="modal" id="confirmModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <div class="modal__title arabic-heading">تأكيد</div>
+      <div class="modal__text" id="confirmText">
+        هل أنت متأكد من إعادة تعيين تقدمك؟
+      </div>
+
+      <div class="modal__actions">
+        <button class="modalBtn modalBtn--ghost" id="confirmCancel" type="button">تراجع</button>
+        <button class="modalBtn modalBtn--danger" id="confirmYes" type="button">نعم متأكد</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
