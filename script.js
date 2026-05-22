@@ -1,10 +1,7 @@
 /* =========================================================
    Checklist - Vanilla JS
-   Fixes:
-   1) Healthcare lectures now render reliably.
-   2) Reset confirmation is a real popup modal.
-   3) Global top header (Checklist + global progress) hides on any subject view.
-   4) Removed "Completed ✅" banners entirely; reset button inside subject header.
+   - Topbar (global progress) is NOT sticky anymore on home.
+   - Topbar hides on subject pages for better reading.
    ========================================================= */
 
 (() => {
@@ -103,7 +100,6 @@
 
   const TOTAL_LECTURES = DATA.ortho.total + DATA.neuro.total + DATA.health.total; // 49
 
-  /* Storage */
   const STORAGE_KEY = "checklist-progress-v3";
   let progressState = loadState();
 
@@ -121,11 +117,9 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState));
   }
 
-  /* DOM */
   const loader = document.getElementById("loader");
   const toast = document.getElementById("toast");
   const topbar = document.getElementById("topbar");
-  const app = document.getElementById("app");
 
   const totalLecturesText = document.getElementById("totalLecturesText");
   const globalCompletedText = document.getElementById("globalCompletedText");
@@ -149,7 +143,6 @@
   const healthBar = document.getElementById("healthBar");
   const healthGlow = document.getElementById("healthGlow");
 
-  // Views
   const views = {
     home: document.getElementById("home"),
     ortho: document.getElementById("ortho"),
@@ -157,25 +150,14 @@
     health: document.getElementById("health")
   };
 
-  // Modal
   const confirmModal = document.getElementById("confirmModal");
   const confirmText = document.getElementById("confirmText");
   const confirmCancel = document.getElementById("confirmCancel");
   const confirmYes = document.getElementById("confirmYes");
 
-  /* Header height (home only) */
-  function syncHeaderHeight() {
-    if (!topbar) return;
-    if (topbar.classList.contains("is-hidden")) return;
-    const h = Math.ceil(topbar.getBoundingClientRect().height);
-    document.documentElement.style.setProperty("--topbar-h", `${h}px`);
-  }
-
-  /* Render */
   function renderAll() {
     if (totalLecturesText) totalLecturesText.textContent = `Total Lectures : ${TOTAL_LECTURES}`;
 
-    // Render all sections lists
     Object.keys(DATA).forEach(sectionKey => {
       const section = DATA[sectionKey];
       section.groups.forEach(group => {
@@ -211,9 +193,8 @@
     ck.appendChild(input);
 
     const text = document.createElement("div");
-    text.className = "lectureText";
-
     const t = document.createElement("div");
+    text.className = "lectureText";
     t.className = "lectureTitle";
     t.textContent = `${number}. ${title}`;
     text.appendChild(t);
@@ -239,7 +220,6 @@
   function onToggleLecture(id, checked, li, sectionKey) {
     progressState[id] = checked;
     saveState();
-
     li.classList.toggle("completed", checked);
 
     if (checked) {
@@ -253,7 +233,6 @@
     updateAllProgress();
   }
 
-  /* Progress */
   function countCompleted(prefix) {
     let c = 0;
     for (const k in progressState) {
@@ -268,14 +247,12 @@
       const section = DATA[key];
       section.groups.forEach(g => g.lectures.forEach(l => valid.add(`${section.prefix}${l.n}`)));
     });
-
     let c = 0;
     for (const id of valid) if (progressState[id]) c++;
     return c;
   }
 
   function updateAllProgress() {
-    // Global
     const globalDone = getGlobalCompleted();
     const globalRemain = TOTAL_LECTURES - globalDone;
     const globalPct = Math.round((globalDone / TOTAL_LECTURES) * 100);
@@ -285,29 +262,23 @@
     globalPercentText.textContent = `${globalPct}%`;
     setBar(globalBar, globalGlow, globalPct);
 
-    // Ortho
     const orthoDone = countCompleted(DATA.ortho.prefix);
     const orthoPct = Math.round((orthoDone / DATA.ortho.total) * 100);
     orthoCountText.textContent = `${orthoDone} / ${DATA.ortho.total} completed`;
     orthoPercentText.textContent = `${orthoPct}%`;
     setBar(orthoBar, orthoGlow, orthoPct);
 
-    // Neuro
     const neuroDone = countCompleted(DATA.neuro.prefix);
     const neuroPct = Math.round((neuroDone / DATA.neuro.total) * 100);
     neuroCountText.textContent = `${neuroDone} / ${DATA.neuro.total} completed`;
     neuroPercentText.textContent = `${neuroPct}%`;
     setBar(neuroBar, neuroGlow, neuroPct);
 
-    // Health
     const healthDone = countCompleted(DATA.health.prefix);
     const healthPct = Math.round((healthDone / DATA.health.total) * 100);
     healthCountText.textContent = `${healthDone} / ${DATA.health.total} completed`;
     healthPercentText.textContent = `${healthPct}%`;
     setBar(healthBar, healthGlow, healthPct);
-
-    // Keep header height correct on home
-    syncHeaderHeight();
   }
 
   function setBar(fillEl, glowEl, pct) {
@@ -316,22 +287,13 @@
     glowEl.style.opacity = clamped > 0 ? "1" : "0";
   }
 
-  /* Navigation + hide topbar on subjects */
+  /* Navigation: hide topbar on subjects */
   function showView(name) {
     Object.keys(views).forEach(v => views[v].classList.toggle("view--active", v === name));
 
     const inHome = (name === "home");
-
-    // hide/show topbar
-    if (inHome) {
-      topbar.classList.remove("is-hidden");
-      app.classList.remove("no-topbar");
-      // update height after shown
-      requestAnimationFrame(syncHeaderHeight);
-    } else {
-      topbar.classList.add("is-hidden");
-      app.classList.add("no-topbar");
-    }
+    if (inHome) topbar.classList.remove("is-hidden");
+    else topbar.classList.add("is-hidden");
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -345,7 +307,7 @@
     });
   }
 
-  /* Reset modal (popup) */
+  /* Reset modal */
   let pendingResetSection = null;
 
   function openConfirm(sectionKey) {
@@ -354,15 +316,14 @@
     confirmText.textContent = `هل أنت متأكد من إعادة تعيين تقدمك في مادة "${name}" ؟`;
 
     confirmModal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden"; // lock scroll
-    // Focus for better UX
+    document.body.style.overflow = "hidden";
     setTimeout(() => confirmYes.focus(), 0);
   }
 
   function closeConfirm() {
     pendingResetSection = null;
     confirmModal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = ""; // unlock scroll
+    document.body.style.overflow = "";
   }
 
   function resetSection(sectionKey) {
@@ -375,7 +336,6 @@
 
     saveState();
 
-    // update UI only for that section
     document.querySelectorAll(`.lectureItem[data-section="${sectionKey}"]`).forEach(item => {
       item.classList.remove("completed");
       const input = item.querySelector("input[type='checkbox']");
@@ -397,7 +357,6 @@
       closeConfirm();
     });
 
-    // backdrop click closes
     confirmModal.querySelectorAll("[data-close]").forEach(el => {
       el.addEventListener("click", closeConfirm);
     });
@@ -458,15 +417,10 @@
     });
   }
 
-  /* Init */
   function init() {
     renderAll();
     initNav();
     initResetButtons();
-
-    // correct header height on home
-    requestAnimationFrame(syncHeaderHeight);
-    window.addEventListener("resize", syncHeaderHeight);
 
     setTimeout(() => loader.setAttribute("aria-hidden", "true"), 450);
   }
